@@ -25,8 +25,8 @@ python -m http.server 8080
 
 | 内容 | 搜索关键词 |
 |------|-----------|
-| 姓名 / 职位 | 我的名字、全栈开发者 |
-| 邮箱 / 电话 | yourname@example.com、+86 138-0000-0000 |
+| 姓名 / 职位 | 刘春庆、大数据开发工程师 |
+| 邮箱 / 电话 | PetterQing@163.com、+86 138-0000-0000 |
 | 头像 | assets/images/my-avatar.svg（可替换为自己的照片） |
 | 社交链接 | logo-github、mail-outline、logo-youtube 对应区块的 href |
 | 关于我 | 关于我板块的简介段落 |
