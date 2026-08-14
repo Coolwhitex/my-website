@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e94560"/>
+      <stop offset="100%" style="stop-color:#ffdb70"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1300" cy="200" r="300" fill="#ffdb70" opacity="0.06"/>
+  <circle cx="300" cy="700" r="250" fill="#e94560" opacity="0.06"/>
+  <text x="120" y="330" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="#ffffff">Claude Code Harness</text>
+  <text x="120" y="420" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="url(#accent)">数仓侧落地方案</text>
+  <text x="120" y="520" font-family="Arial, sans-serif" font-size="30" fill="#b0b8c8">深度解读 · 得物技术实战经验 · 五层防御体系</text>
+  <rect x="120" y="580" width="560" height="6" rx="3" fill="url(#accent)"/>
+  <text x="120" y="660" font-family="Arial, sans-serif" font-size="24" fill="#8892a5">Hooks · Subagents · Context 管理 · SKILL 工程化</text>
+  <text x="120" y="820" font-family="Arial, sans-serif" font-size="22" fill="#5c6b85">刘春庆 · 大数据开发工程师 · 技术分享</text>
+</svg>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Harness 工程：数仓侧落地方案深度解读 - 刘春庆的个人网站</title>
+  <link rel="shortcut icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', 'Microsoft YaHei', sans-serif; background: hsl(240, 2%, 13%); color: hsl(0, 0%, 84%); line-height: 1.9; }
+    .container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: hsl(45, 100%, 72%); text-decoration: none; font-size: 15px; margin-bottom: 28px; transition: opacity 0.3s; }
+    .back-link:hover { opacity: 0.75; }
+    .banner { width: 100%; height: 300px; object-fit: cover; border-radius: 16px; border: 1px solid hsla(0, 0%, 25%, 0.5); background: hsl(0, 0%, 22%); }
+    .meta { margin-top: 20px; font-size: 14px; color: hsla(0, 0%, 84%, 0.6); }
+    .category { display: inline-block; padding: 4px 14px; background: hsl(45, 100%, 72%); color: hsl(240, 2%, 13%); font-size: 13px; font-weight: 600; border-radius: 20px; margin-right: 10px; }
+    h1 { margin-top: 14px; font-size: 30px; font-weight: 600; color: hsl(0, 0%, 100%); line-height: 1.4; }
+    .section { margin-top: 40px; }
+    h2 { font-size: 22px; font-weight: 600; color: hsl(45, 100%, 72%); padding-bottom: 10px; margin-bottom: 18px; border-bottom: 1px solid hsla(0, 0%, 25%, 0.6); }
+    h3 { font-size: 17px; font-weight: 600; color: hsl(0, 0%, 95%); margin: 24px 0 10px; }
+    p { margin-bottom: 14px; text-align: justify; }
+    ul, ol { padding-left: 26px; margin-bottom: 14px; }
+    li { margin-bottom: 8px; }
+    strong { color: hsl(45, 100%, 72%); font-weight: 600; }
+    .highlight { background: hsl(240, 1%, 25%); border-left: 4px solid hsl(45, 100%, 72%); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+    .highlight p { margin: 0; }
+    .note { background: hsla(0, 43%, 51%, 0.15); border-left: 4px solid hsl(0, 43%, 51%); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+    .note p { margin: 0; }
+    pre { background: hsl(0, 0%, 7%); border: 1px solid hsla(0, 0%, 25%, 0.4); border-radius: 8px; padding: 16px 18px; overflow-x: auto; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; line-height: 1.7; color: hsl(0, 0%, 88%); margin: 14px 0; }
+    code { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.9em; }
+    p code, li code { background: hsl(0, 0%, 22%); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; color: hsl(45, 100%, 78%); }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th, td { border: 1px solid hsla(0, 0%, 25%, 0.6); padding: 10px 12px; text-align: left; }
+    th { background: hsl(240, 1%, 25%); color: hsl(45, 100%, 72%); font-weight: 600; }
+    tr:nth-child(even) { background: hsla(240, 1%, 25%, 0.3); }
+    .footer-note { margin-top: 56px; padding-top: 20px; border-top: 1px solid hsla(0, 0%, 25%, 0.6); font-size: 13px; color: hsla(0, 0%, 84%, 0.6); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <img class="banner" src="../assets/images/blog-7.svg" alt="Claude Code Harness 数仓侧落地方案">
+    <div class="meta"><span class="category">AI Coding</span><span>2025 年 3 月 15 日</span></div>
+    <h1>Claude Code Harness 工程：数仓侧落地方案深度解读</h1>
+
+    <div class="section">
+      <h2>前言</h2>
+      <p>本文深度解读得物技术团队公开分享的《Claude Code Harness 工程：数仓侧落地方案》。原文分享了一个非常现实的命题：<strong>当 AI Coding 工具（Claude Code）真正进入数仓开发流水线后，如何系统性解决"AI 失忆、规范失控、context 膨胀"三大结构性痛点</strong>。</p>
+      <p>我在原文基础上做了大量展开：补充了背景原理、每一层防御机制的可运行配置、以及作为数仓开发者的落地思考。希望这篇文章能帮你把"随手问 AI"升级为"把能力封装进研发流水线"。</p>
+    </div>
+
+    <div class="section">
+      <h2>一、AI Coding 现状与痛点：为什么需要 Harness</h2>
+      <h3>1. 当前使用情况</h3>
+      <p>得物离线数仓各小组已基本完成 AI Coding 工具的覆盖，主力工具为 <code>Claude Code</code>，辅以数据平台的 IDE 插件。在应对重复性工作（生成标准建表 DDL、常见 ETL 模板、重复性报表 SQL）时，效率提升非常明显。</p>
+      <h3>2. 三类结构性痛点</h3>
+      <ul>
+        <li><strong>痛点一：AI 不记得上下文约束，开发过程中反复"失忆"。</strong>会话开始时告知了"金额字段单位是千元"，对话进行到一半后 AI 忘了，生成的 SQL 把千元当元用，数据差了 1000 倍。这是 Claude Code 的 <code>context compact</code>（上下文压缩）机制的系统性限制：当对话 token 接近上限（约 95%）时，历史内容被自动压缩为摘要，临时口头说的约束全部丢失。</li>
+        <li><strong>痛点二：规范执行不稳定，靠记忆兜底的部分最容易出问题。</strong>OneData 命名规范、注释三段式、INSERT 必须带 PARTITION 子句……这些规范大家都知道。项目工期紧张时，人工规范遵守率降至 60%~70%，AI 靠 prompt 记忆的规范遵守率也只有 70%~80%。真正需要的是：把规范从"LLM 记忆中的指导性内容"变成"每次执行时强制检查的护栏"。</li>
+        <li><strong>痛点三：大型需求开发中，context 很快被撑满。</strong>复杂需求（大型宽表、大量下游血缘）的典型过程：血缘查询结果（500~3000 tokens）+ 自测 23 条 SQL 执行结果（5000~15000 tokens）+ SKILL 规范文件内容（~10000 tokens）+ 数据比对样本 = context 迅速膨胀 → compact 触发 → 关键约束遗忘 → AI 开始犯低级错误。<strong>核心矛盾：越是复杂的需求越依赖 AI，但越复杂 context 越容易撑满，AI 越容易"失忆"。</strong></li>
+      </ul>
+      <h3>3. 从"随手问 AI"到"把能力封装起来"</h3>
+      <p>解决思路来自一条反复验证的结论：<strong>规范执行是人的短板、AI 的长板；业务判断是 AI 的短板、人的长板</strong>。Harness 工程的目标，就是把"执行层"的不稳定因素系统性消掉：</p>
+      <ul>
+        <li>把规范写进 hooks，不再靠 AI 记忆，每次写 SQL 文件后自动触发检查；</li>
+        <li>把迭代约束写进持久化文件，compact 后自动重新注入，不再靠临时口头说；</li>
+        <li>把高 token 操作隔离到 subagent，主 context 只接收摘要，不被过程数据撑满。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>二、先搞清楚"Harness"是什么</h2>
+      <p>在 Claude Code 的 <code>update-config</code> skill 描述中有一句关键的话：<em>"Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude"</em>。</p>
+      <p>这句话揭示了本质：<strong>Harness = Claude Code 的宿主运行框架</strong>，即 Claude Code 客户端本身这个"工具链容器"。它负责：</p>
+      <ul>
+        <li>管理 <code>context window</code> 生命周期（含 auto-compact）；</li>
+        <li>在 LLM 推理循环之外<strong>确定性</strong>地执行 hooks；</li>
+        <li>协调 subagents 的生命周期；</li>
+        <li>不依赖模型判断，直接执行配置的自动化行为。</li>
+      </ul>
+      <table>
+        <tr><th>维度</th><th>LLM（Claude）</th><th>Harness（宿主框架）</th></tr>
+        <tr><td>行为来源</td><td>推理 / 概率</td><td>配置 / 确定</td></tr>
+        <tr><td>适合任务</td><td>语义理解、方案设计、代码生成</td><td>规范校验、危险拦截、生命周期管理</td></tr>
+        <tr><td>是否可预测</td><td>受 context 影响，会"失忆"</td><td>100% 按配置执行，从不忘记</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>三、核心问题：compact 到底丢掉什么？</h2>
+      <p>每次数仓开发 context 接近满时，auto-compact 触发（默认 95% 时触发），会把整个对话历史替换为一份摘要，token 缩减到原来的约 <strong>12%</strong>。也就是说，<strong>88% 的历史细节被压缩丢失</strong>。</p>
+      <p>数仓场景最痛的点：</p>
+      <ul>
+        <li>对话中说的"这次用 OVERWRITE 模式"、"先忽略 field_a 字段" → compact 后全忘；</li>
+        <li>SKILL 文件读了一半，compact 后前几个 step 的内容没了 → Claude 反复询问；</li>
+        <li>自测跑出来 50 行结果，加上血缘查询的几十行表结构 → context 很快膨胀到 compact 阈值。</li>
+      </ul>
+      <div class="highlight">
+        <p><strong>一句话总结：compact 丢的不是"知识"，而是"这次任务的状态与临时约束"。</strong>而这两样恰恰是数仓开发中最不能丢的东西。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>四、五层防御体系（从简单到复杂）</h2>
+      <h3>第一层：写死进 CLAUDE.md（立即可用）</h3>
+      <p><strong>机制：</strong>项目根目录 <code>.claude/CLAUDE.md</code> 每次 compact 后从磁盘重新注入，是最可靠的持久化位置。将当前迭代的关键信息写入：</p>
+      <pre># 当前迭代状态（每次迭代手动更新）
+
+## 正在开发
+- 表：db_a.dws_table_a 版本：V1.0 node_id：1000000001 状态：ETL开发阶段（Step 3/8）
+
+## 本次迭代约束
+- 禁止修改：dwd_table_b（已上线，只读）
+- 分区字段：partition_dt（格式 yyyyMMdd，不是 dt）
+- amount 字段单位：千元（不是元）
+
+## 数仓全局规范
+- 建表：分区字段必须是 partition_dt string
+- 禁止：SELECT *，UPDATE/DELETE 无 WHERE
+- 金额字段用 DECIMAL(20,4)，不用 DOUBLE
+- INSERT 必须带 PARTITION 子句</pre>
+      <p><strong>操作规则：</strong>进入新迭代时更新"正在开发"和"本次迭代约束"两节；上线后清空"本次迭代约束"；全局规范长期保留，控制在 100 行以内。这是零成本的第一道防线，立即可用。</p>
+
+      <h3>第二层：Auto Memory 自动积累</h3>
+      <p><strong>机制：</strong>Claude 自动将跨会话发现写入 <code>~/.claude/projects/&lt;project&gt;/memory/MEMORY.md</code>，每次 compact 后重新注入。数仓场景下主动触发 Claude 写记忆的时机：</p>
+      <ul>
+        <li>"这张表的 amount 字段单位是千元，请记住"；</li>
+        <li>"field_a 在特定场景下会为空，请记住这个踩坑"；</li>
+        <li>"本次 V1.0 的关键变更是 field_b 逻辑调整，请记住"。</li>
+      </ul>
+      <p>Claude 会自动写入 MEMORY.md，下次会话或 compact 后自动恢复。这一层解决的是<strong>跨会话</strong>的踩坑记忆，与第一层的<strong>当次迭代</strong>约束互补。</p>
+
+      <h3>第三层：hooks 自动验证（核心防御）</h3>
+      <p>这是解决"每次写完 SQL 自动检查"的关键机制。配置文件结构：</p>
+      <pre>数仓项目根目录/
+└── .claude/
+    ├── settings.json          ← hooks 在这里配置
+    ├── CLAUDE.md              ← 数仓规范上下文
+    └── hooks/
+        ├── validate_sql.sh          ← SQL 规范自动检查
+        ├── block_dangerous_ddl.sh   ← 危险 DDL 拦截
+        └── inject_context.sh        ← compact 后重注入上下文</pre>
+      <p><code>settings.json</code> 完整配置：</p>
+      <pre>{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Write|Edit", "hooks": [
+        { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/validate_sql.sh",
+          "timeout": 60, "statusMessage": "检查 SQL 规范..." }
+      ]}
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [
+        { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block_dangerous_ddl.sh" }
+      ]}
+    ],
+    "SessionStart": [
+      { "matcher": "compact", "hooks": [
+        { "type": "command", "command": "cat \"$CLAUDE_PROJECT_DIR\"/.claude/context/dw_conventions.md",
+          "statusMessage": "重注入数仓规范..." }
+      ]}
+    ],
+    "Stop": [
+      { "hooks": [
+        { "type": "prompt",
+          "prompt": "检查用户要求的所有任务是否都已完成。如果还有未完成项，返回提示但不要重新开始。检查 stop_hook_active 是否为 true，如是则直接 exit。",
+          "model": "claude-haiku-4-5-20251001" }
+      ]}
+    ]
+  }
+}</pre>
+      <p><code>.claude/hooks/validate_sql.sh</code>（SQL 规范自动检查）：</p>
+      <pre>#!/bin/bash
+INPUT=$(cat)
+FILE_PATH=$(echo "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('file_path',''))" 2>/dev/null)
+
+# 只处理 .sql 文件
+[[ "$FILE_PATH" != *.sql ]] &amp;&amp; exit 0
+[[ -z "$FILE_PATH" ]] &amp;&amp; exit 0
+SQL=$(cat "$FILE_PATH" 2>/dev/null)
+[[ -z "$SQL" ]] &amp;&amp; exit 0
+
+ERRORS=()
+
+# 规范1：禁止 SELECT *
+echo "$SQL" | grep -iqE 'SELECT\s+\*' &amp;&amp; ERRORS+=("CRITICAL: 发现 SELECT *，必须明确列名")
+
+# 规范2：INSERT 必须带 PARTITION
+if echo "$SQL" | grep -iqE 'INSERT\s+(INTO|OVERWRITE)'; then
+  echo "$SQL" | grep -iqE 'PARTITION\s*\(' || ERRORS+=("CRITICAL: INSERT 缺少 PARTITION 子句")
+fi
+
+# 规范3：DOUBLE 类型金额
+echo "$SQL" | grep -iqE '\bDOUBLE\b' &amp;&amp; ERRORS+=("WARNING: 金额字段建议用 DECIMAL(20,4)，不用 DOUBLE")
+
+# 规范4：UPDATE/DELETE 必须有 WHERE
+if echo "$SQL" | grep -iqE '\b(UPDATE|DELETE)\b'; then
+  echo "$SQL" | grep -iqE '\bWHERE\b' || ERRORS+=("CRITICAL: UPDATE/DELETE 缺少 WHERE 条件")
+fi
+
+if [ ${ERRORS[@]} -gt 0 ]; then
+  echo "=== SQL 规范检查失败：$FILE_PATH ===" &gt;&amp;2
+  for err in "${ERRORS[@]}"; do
+    echo "  $err" &gt;&amp;2
+  done
+  exit 2
+fi
+
+echo "SQL 规范检查通过: $(basename $FILE_PATH)" &gt;&amp;2
+exit 0</pre>
+      <p><code>.claude/hooks/block_dangerous_ddl.sh</code>（危险 DDL 拦截）：</p>
+      <pre>#!/bin/bash
+INPUT=$(cat)
+CMD=$(echo "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('command',''))" 2>/dev/null)
+
+# 拦截生产表 DROP/TRUNCATE（放行 _dev/_test/_stg 后缀）
+if echo "$CMD" | grep -iqE '\b(DROP\s+TABLE|TRUNCATE\s+TABLE)\b'; then
+  if ! echo "$CMD" | grep -qiE '(_dev|_test|_stg)\b'; then
+    echo "BLOCKED: 检测到生产表 DROP/TRUNCATE 操作，请确认表名是否正确" &gt;&amp;2
+    exit 2
+  fi
+fi
+exit 0</pre>
+      <div class="note">
+        <p><strong>关键陷阱：</strong>阻断必须用 <code>exit 2</code>，用 <code>exit 1</code> 不会阻止 Claude 继续执行。这是 hook 通信协议中最容易踩的坑。</p>
+      </div>
+
+      <h3>第四层：subagents 做上下文隔离</h3>
+      <p><strong>核心原则：</strong>把"高 token 消耗但结果只需要摘要"的操作放到 subagent 的独立 context 中执行。</p>
+      <p>数仓场景适合下放 subagent 的操作：</p>
+      <ul>
+        <li><strong>SQL 语法/规范验证</strong> → <code>sql-validator</code>（大量验证日志不污染主对话）；</li>
+        <li><strong>血缘/表结构探索</strong> → <code>dw-explorer</code>（多表 DDL、上下游血缘查询）；</li>
+        <li><strong>自测执行</strong> → <code>data-quality-checker</code>（23 条 SQL 执行结果）；</li>
+        <li><strong>数据比对</strong> → <code>data-comparator</code>（两表大样本对比）。</li>
+      </ul>
+      <p><code>.claude/agents/dw-explorer.md</code> 示例（防止血缘查询撑爆主 context）：</p>
+      <pre>---
+name: dw-explorer
+description: 数仓结构探索 agent。当需要大量读取表结构、DDL、字段信息、血缘关系时自动调用，避免大量文件内容污染主 context。只读，不修改任何文件。
+tools: Read, Glob, Grep, Bash
+model: haiku
+permissionMode: dontAsk
+---
+
+你是数仓探索专家，只读操作。当被调用时：
+1. 读取指定表的 DDL、字段信息、分区策略
+2. 分析上下游血缘（一层）
+3. 识别关键字段口径（金额、日期、状态类字段）
+
+输出：不超过 80 行的结构化摘要，包含：
+- 表基本信息（层级、粒度、分区策略）
+- 核心字段定义（含口径说明）
+- 上下游血缘（只列表名，不展开内容）
+- 发现的特殊口径或踩坑点</pre>
+      <p>在主对话中自然触发：<code>用 dw-explorer 分析 db_a.dwd_table_a 的结构</code>，或强制指定：<code>@"sql-validator (agent)" 验证 path/to/insert.sql</code>。</p>
+
+      <h3>第五层：SKILL 文件改造（减少 context 消耗）</h3>
+      <p><strong>当前问题：</strong>每次调用 SKILL 文件（01~08.md），内容全部加载进主 context（约 10KB），加速 compact 触发。</p>
+      <p><strong>改造方向：</strong></p>
+      <ul>
+        <li>把 SKILL 文件的"执行步骤"提炼成 subagent 指令，subagent 内部读完整 SKILL 文件，主 context 只接收结果摘要；</li>
+        <li>用 path-scoped rules 替代 SKILL 文件中的规范章节，按需加载：</li>
+      </ul>
+      <pre>---
+# .claude/rules/etl-rules.md
+paths:
+  - "**/*insert*.sql"
+  - "**/*_di.sql"
+  - "**/*_df.sql"
+---
+# ETL 开发规范（按文件路径自动加载）
+- 必须有 partition_dt 分区
+- INSERT OVERWRITE 前检查分区是否已存在
+- 不允许跨库 JOIN</pre>
+      <p>SKILL 文件保持现状，但改变调用方式：不要在主对话中直接触发，而是启动 subagent 读 SKILL 文件执行，主对话只接收最终产出的 SQL 文件路径。</p>
+    </div>
+    <div class="section">
+      <h2>五、可行落地方案：数仓 Harness 架构</h2>
+      <p>整个方案的核心逻辑是<strong>职责分层</strong>：不同类型的工作交给最合适的机制去做，而不是全部压在 Claude 的推理循环里。</p>
+      <table>
+        <tr><th>层级</th><th>解决什么问题</th><th>核心机制</th><th>预期效果</th></tr>
+        <tr><td><strong>持久化层</strong>（CLAUDE.md + Memory）</td><td>"失忆"问题</td><td>compact 后从磁盘重新注入</td><td>临时口头约束不再丢失</td></tr>
+        <tr><td><strong>Harness 层</strong>（Hooks）</td><td>"规范靠记忆"问题</td><td>PostToolUse 每次写 .sql 后确定性触发；违规 exit 2 强制阻断</td><td>规范遵守率 70%~80% → 95%+</td></tr>
+        <tr><td><strong>Subagent 层</strong></td><td>"context 被撑满"问题</td><td>血缘/自测/比对放独立 context，主会话只收摘要</td><td>compact 触发频率降低 50%~70%</td></tr>
+      </table>
+      <p>三层机制分工明确，互不干扰：<strong>Hooks</strong> 处理"写动作触发的规范检查"；<strong>Subagent</strong> 处理"读操作的 context 隔离"；<strong>CLAUDE.md</strong> 处理"跨会话状态持久化"。</p>
+      <p>为了配合这套架构落地，数仓的研发流程可以拆解为 8 个步骤，按"对 context 的影响"分成两类：</p>
+      <ul>
+        <li><strong>留在主会话处理</strong>（内容量有限，context 压力低）：需求分析（读 PRD）、技术设计（写规范说明）、SR 导入（生成配置）、SLA/DQC（生成规则）；</li>
+        <li><strong>必须通过 Harness 机制处理</strong>（否则会加速 compact 或规范失控）：ETL 开发（PostToolUse hook 自动规范检查）、自测（data-quality-checker subagent 隔离）、数据比对（data-comparator subagent 隔离）、性能优化（dw-explorer subagent 隔离）。</li>
+      </ul>
+      <div class="highlight">
+        <p><strong>这种分工不是把步骤拆开独立执行，而是在同一个工作流里，让每个步骤以最合适的方式运行</strong>：context 压力小的留在主会话保持流畅，context 压力大的通过 subagent 隔离保持干净，规范检查通过 hook 自动执行不需要人工干预。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>六、基于 SKILL 规范的数仓工作流设计</h2>
+      <p>数仓 8 步 SKILL 规范（需求分析→技术设计→ETL→自测→数据比对→SR 导入→性能优化→SLA/DQC）天然对应 Harness 的三层机制。核心思路是：<strong>SKILL 文件不变，改变调用方式——主对话只读规范结论，实际执行由 subagent 或 hook 完成</strong>。</p>
+
+      <h3>Step 1：需求分析</h3>
+      <p><strong>推荐提示词：</strong></p>
+      <pre>用 dw-explorer subagent 先读取上游表结构（只返回摘要），然后按需求分析规范生成：
+1. 需求摘要（≤5行）
+2. 表字段口径草稿
+3. 待确认问题清单（按优先级排序）
+需求文档 URL：[粘贴PRD链接]</pre>
+      <p><strong>Hook 配合：</strong>SessionStart 注入当前迭代约束（版本号/表名/禁止修改的表）。</p>
+
+      <h3>Step 2：技术设计</h3>
+      <p><strong>推荐提示词：</strong></p>
+      <pre>基于上一步确认的需求，按 OneData 规范完成技术设计：
+表名：[按 层级_域_主题_粒度_周期 格式命名]
+粒度：[描述]
+分区：partition_dt string（格式 yyyyMMdd）
+禁止：任何与上游不一致的字段命名
+输出 OneData 建模说明，不超过 60 行</pre>
+      <p><strong>CLAUDE.md 写入</strong>（设计完成后手动更新）：</p>
+      <pre>## 当前迭代技术设计决策
+- 表名：db_a.dws_table_a
+- 主键：order_no + partition_dt
+- 特殊约束：amount 字段继承上游千元单位，不做转换</pre>
+
+      <h3>Step 3：ETL 开发（Harness 价值最高的步骤）</h3>
+      <p><strong>推荐提示词：</strong></p>
+      <pre>按 ETL 开发规范生成建表 DDL + Insert SQL：
+- 建表文件：ddl_[表名].sql
+- 插入文件：insert_[表名].sql
+- 要求：INSERT 用 OVERWRITE 模式，PARTITION 子句必须包含 partition_dt
+- 金额字段：DECIMAL(20,4)，单位继承上游（千元）
+生成完毕后，用 sql-validator subagent 验证两个文件</pre>
+      <p><strong>Hook 自动执行</strong>（无需手动触发）：每次写入 .sql 文件 → PostToolUse hook 自动运行规范检查。若发现 SELECT * 或缺少 PARTITION → 返回 exit 2，Claude 收到错误自动修正。</p>
+
+      <h3>Step 4：自测</h3>
+      <p><strong>推荐提示词</strong>（防止自测结果撑爆主 context）：</p>
+      <pre>用 data-quality-checker subagent 对 [表名] 执行 23 项标准自测，bizdate = [日期]
+补充口径约束：[如"is_perform=1 只取履约订单"]
+只返回：PASS/FAIL 汇总 + FAIL 项详情（≤50行），不返回原始 SQL 执行结果</pre>
+      <p><strong>效果：</strong>23 条 SQL 的执行结果全在 subagent context 里，主对话只收到一份摘要报告。</p>
+
+      <h3>Step 5：数据比对</h3>
+      <p><strong>推荐提示词：</strong></p>
+      <pre>用 data-comparator subagent 对比：
+新表：[新表名] partition_dt = [日期]
+参考表：[旧表名/线上表]
+比对字段：[核心金额字段列表]
+容差：≤ 0.01%（金额类）
+只返回：差异超过容差的字段列表 + 差值，不返回全量对比数据</pre>
+
+      <h3>Step 6：SR 数据库导入</h3>
+      <p><strong>推荐提示词</strong>（自动生成最优数据库建表参数）：</p>
+      <pre>用 dw-sr SKILL 生成建表任务，先查以下表的 DDL 和一层上下游血缘（只返回摘要）：
+- 源表：[ODPS表名]
+- 目标表：[SR表名]
+然后基于 DDL 摘要，分析当前 SR 同步任务的配置风险：
+1. 字段类型是否有精度丢失风险（DECIMAL/DOUBLE → DECIMAL(38,18)）
+2. Key 字段选择是否合理（重复率是否过高导致 DUPLICATE KEY 膨胀）
+3. 分区数量是否合理（partition_live_number 与下游查询窗口是否匹配）
+4. DISTRIBUTED BY HASH 的 bucket 数与数据量是否匹配
+5. 是否有 DATETIME 字段在 SR 侧用了 VARCHAR 存储（会导致时间过滤走全表扫描）
+输出同步任务配置建议（按风险高低排序），不超过 20 行。
+每条格式：[风险等级 高/中/低] 问题描述 → 建议修改方式</pre>
+
+      <h3>Step 7：性能优化</h3>
+      <p><strong>推荐提示词</strong>（防止血缘查询撑爆主 context）：</p>
+      <pre>用 dw-explorer subagent 先查 [表名] 的一层上下游血缘和 DDL（只返回摘要），然后分析当前 Insert SQL 的性能瓶颈：
+1. 是否有全表扫描
+2. 是否有笛卡尔积风险
+3. 是否可以用 MAP JOIN 替代 HASH JOIN
+输出优化建议（按收益排序），不超过 30 行</pre>
+
+      <h3>Step 8：SLA/DQC</h3>
+      <p><strong>推荐提示词：</strong></p>
+      <pre>按 SLA/DQC 规范为 [表名] 生成 9 类 DQC 规则：
+完整性：主键非空、分区数据量
+准确性：核心金额字段与上游比对（容差 0.01%）
+一致性：is_perform 与 perform_flag 联动逻辑
+时效性：产出时间 SLA ≤ 次日 8:00
+输出 DQC 配置 JSON，可直接使用</pre>
+
+      <h3>SKILL 调用方式改造（减少主 context 消耗）</h3>
+      <p><strong>当前问题：</strong>触发 SKILL 时，SKILL 文件全文（约 10KB）加载进主 context，加速 compact。</p>
+      <p><strong>核心原则：</strong>主对话只接收决策级信息（PASS/FAIL、差异字段、优化方案），不接收过程数据（SQL 执行结果、原始血缘列表、完整 DDL 内容）。</p>
+      <p>以 <code>/dw-etl</code> 为例，一条命令封装了什么：</p>
+      <ul>
+        <li><strong>规范内容（写死，不靠记忆）：</strong>分区字段必须是 partition_dt STRING；金额字段 DECIMAL(26,4) 不用 DOUBLE；必须 INSERT OVERWRITE 且带 PARTITION；禁止 SELECT *、跨库 JOIN。</li>
+        <li><strong>产出格式（结构化，不走样）：</strong><code>ddl_[表名].sql</code>（ODPS 建表）+ <code>insert_[表名].sql</code>（Insert SQL）+ <code>ddl_sr_[表名].sql</code>（SR 建表）。</li>
+        <li><strong>自动护栏（Hook 配合）：</strong>每次 .sql 写入后 validate_sql.sh 自动执行，违规 exit 2 阻断。</li>
+        <li><strong>subagent 卸载：</strong>生成后用 sql-validator 验证，结果在 subagent context 里，主对话只收到 PASS/FAIL。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>七、三步落地步骤</h2>
+      <h3>步骤一：项目级上下文持久化</h3>
+      <p>在数仓项目目录下创建 <code>.claude/CLAUDE.md</code>，写入当前迭代状态。每次新迭代开始时更新"正在开发"和"本次迭代约束"两节，上线后清空约束节。全局规范永久保留，控制在 100 行以内。</p>
+      <h3>步骤二：配置 hooks 自动验证</h3>
+      <p>创建 <code>.claude/settings.json</code> + <code>hooks/</code> 目录，配置 PostToolUse hook（每次写 .sql 后自动规范检查）和 PreToolUse hook（拦截危险 DDL）。<strong>效果：</strong>不需要每次手动说"帮我检查 SQL 规范"，hook 在 Harness 层自动触发，不占用 Claude 推理资源。</p>
+      <h3>步骤三：创建 subagents 隔离高 token 操作</h3>
+      <p>创建三个核心 subagent 文件：<code>sql-validator.md</code>、<code>dw-explorer.md</code>、<code>data-quality-checker.md</code>。将 Step 4/5/7 的执行全部下放，预计主 context compact 频率降低 50%~70%。</p>
+    </div>
+
+    <div class="section">
+      <h2>八、Harness 工程能解决的核心问题</h2>
+      <h3>1. 数仓 AI 开发当前的本质瓶颈：语义理解</h3>
+      <p>在实际数仓 AI 开发中，<strong>技术能力不是瓶颈，语义理解才是</strong>。需求理解偏差占总返工的 40%~60%，大约 40%~50% 的工作时间花在理解需求和与业务核对口径上。AI 在数仓场景的不准确，根本原因不是"不会写 SQL"，而是"不理解业务语义"——不知道这张表的 amount 单位是千元还是元，不知道 is_perform=1 在这个版本里意味着什么，不知道某字段在特定场景下会为空。</p>
+      <h3>2. 语义 × 数据 = 准确率</h3>
+      <div class="highlight">
+        <p><strong>准确率 = 语义理解深度 × 数据规范覆盖度</strong></p>
+      </div>
+      <p>Harness 工程的本质，是把"语义"和"规范"从不可靠的 LLM 记忆中，迁移到确定性的 hooks + 持久化文件里，从而让这个等式两边的变量都变得稳定。</p>
+      <h3>3. 具体能解决的四类问题</h3>
+      <table>
+        <tr><th>问题</th><th>现状</th><th>Harness 解法</th><th>结果</th></tr>
+        <tr><td>字段口径遗忘导致计算错误</td><td>amount 千元/元混用，数据差 1000 倍</td><td>口径写进 CLAUDE.md；踩坑写进 Auto Memory</td><td>从"时常发生"降到"基本不出现"</td></tr>
+        <tr><td>需求理解偏差导致返工</td><td>GMV 口径不一致，返工</td><td>口径草稿写进迭代约束；Stop hook 检查任务完整性</td><td>一次交付通过率 50% → 90%</td></tr>
+        <tr><td>SQL 规范执行不一致</td><td>规范遵守率 70%~80%</td><td>PostToolUse hook 强制检查，违规 exit 2</td><td>遵守率提升到 95%+</td></tr>
+        <tr><td>大型需求 context 耗尽</td><td>血缘+自测+SKILL 撑满 context</td><td>subagent 隔离高 token 操作</td><td>compact 频率降低 50%~70%</td></tr>
+      </table>
+      <h3>4. 与传统数仓 AI 开发方式的对比</h3>
+      <table>
+        <tr><th>维度</th><th>传统方式（对话驱动）</th><th>Harness 方式（规则驱动）</th></tr>
+        <tr><td>规范执行</td><td>靠 AI 记忆，可能遗忘</td><td>hook 强制，100% 执行</td></tr>
+        <tr><td>上下文</td><td>过程数据占用主 context</td><td>subagent 隔离，主 context 只收摘要</td></tr>
+        <tr><td>约束持久化</td><td>口头说明，compact 即失</td><td>CLAUDE.md 持久化，compact 后重注入</td></tr>
+        <tr><td>可靠性</td><td>随对话变长而下降</td><td>全程稳定</td></tr>
+      </table>
+      <h3>5. 从"AI 帮我写代码"到"AI 嵌入研发流水线"</h3>
+      <p>Harness 工程的最终目标，不是让 Claude 更聪明，而是让整个研发流水线更可靠：</p>
+      <ul>
+        <li><strong>Claude（LLM）</strong>负责：理解需求、设计方案、生成代码——需要语义理解的事；</li>
+        <li><strong>Harness（hooks）</strong>负责：规范检查、危险拦截、任务完整性验证——需要确定性执行的事；</li>
+        <li><strong>Subagents</strong>负责：大量文件读取、血缘查询、自测执行——消耗大量 context 的事；</li>
+        <li><strong>CLAUDE.md + Memory</strong>负责：字段口径、迭代约束、踩坑经验——需要跨会话持久化的事。</li>
+      </ul>
+      <p>这四层分工，让数仓 AI 开发从"对话驱动的一次性辅助"升级为<strong>"规则嵌入的流水线自动化"</strong>。</p>
+    </div>
+
+    <div class="section">
+      <h2>九、我的落地思考</h2>
+      <p>读完这篇方案，我最深的感受是：<strong>AI 编程的工程化，核心不是让模型更强，而是把"不可靠的推理"和"可靠的规则"正确分层</strong>。得物这套 Harness 方案的可贵之处在于，它没有追求让 AI 一步到位，而是老老实实地承认了 LLM 的三个弱点（失忆、规范飘移、context 有限），然后用三层机制逐一补位。</p>
+      <p>对个人开发者来说，即使没有完整的数仓流程，也可以立刻用上其中两招：</p>
+      <ul>
+        <li><strong>CLAUDE.md 持久化</strong>——把你项目里的关键约束、字段口径、踩坑记录写进去，成本为零，收益立竿见影；</li>
+        <li><strong>hooks 规范校验</strong>——哪怕只是"禁止 SELECT *"和"INSERT 必须带 PARTITION"两条规则，也能拦住大部分低级错误。</li>
+      </ul>
+      <div class="note">
+        <p><strong>声明：</strong>本文为对得物技术团队公开文章的深度解读与扩展，原文版权归得物技术所有，未经许可不得转载原文。本文内容仅供技术学习交流。</p>
+      </div>
+    </div>
+
+    <p class="footer-note">© 2025 刘春庆 · 大数据开发工程师 · <a href="https://github.com/Coolwhitex" style="color:hsl(45,100%,72%);text-decoration:none;">GitHub</a></p>
+  </div>
+</body>
+</html>
