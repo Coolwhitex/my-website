@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flink 实时计算平台 - 刘春庆的个人网站</title>
+  <link rel="shortcut icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', 'Microsoft YaHei', sans-serif; background: hsl(240, 2%, 13%); color: hsl(0, 0%, 84%); line-height: 1.8; }
+    .container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: hsl(45, 100%, 72%); text-decoration: none; font-size: 15px; margin-bottom: 32px; transition: opacity 0.3s; }
+    .back-link:hover { opacity: 0.75; }
+    .banner { width: 100%; height: 280px; object-fit: cover; border-radius: 16px; border: 1px solid hsla(0, 0%, 25%, 0.5); background: hsl(0, 0%, 22%); }
+    .category { display: inline-block; margin-top: 24px; padding: 4px 14px; background: hsl(45, 100%, 72%); color: hsl(240, 2%, 13%); font-size: 13px; font-weight: 600; border-radius: 20px; }
+    h1 { margin-top: 16px; font-size: 32px; font-weight: 600; color: hsl(0, 0%, 100%); }
+    .section { margin-top: 36px; }
+    h2 { font-size: 20px; font-weight: 600; color: hsl(45, 100%, 72%); padding-bottom: 10px; margin-bottom: 16px; border-bottom: 1px solid hsla(0, 0%, 25%, 0.6); }
+    p { margin-bottom: 12px; }
+    ul { padding-left: 22px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; }
+    .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { padding: 4px 12px; background: hsl(240, 1%, 25%); color: hsl(0, 0%, 84%); border-radius: 6px; font-size: 13px; }
+    .footer-note { margin-top: 48px; padding-top: 20px; border-top: 1px solid hsla(0, 0%, 25%, 0.6); font-size: 13px; color: hsla(0, 0%, 84%, 0.6); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <img class="banner" src="../assets/images/project-2.png" alt="Flink 实时计算平台">
+    <span class="category">大数据开发</span>
+    <h1>Flink 实时计算平台</h1>
+    <div class="section"><h2>项目简介</h2><p>基于 Flink 构建的实时计算平台，支撑实时大屏、实时风控、实时运营等场景，实现毫秒级数据处理。</p></div>
+    <div class="section"><h2>技术栈</h2><div class="tech-tags"><span class="tag">Flink</span><span class="tag">Kafka</span><span class="tag">ClickHouse</span><span class="tag">Redis</span><span class="tag">Java</span><span class="tag">Flink SQL</span></div></div>
+    <div class="section"><h2>核心功能</h2><ul><li>Kafka 接入多源业务日志，Flink SQL + DataStream 双模式开发</li><li>实现实时大屏指标（GMV、UV、PV、转化率等）秒级刷新</li><li>精确一次（Exactly-Once）语义保障，Checkpoint 稳定性调优</li><li>实时数据写入 ClickHouse，支持多维实时分析查询</li></ul></div>
+    <div class="section"><h2>我的职责</h2><p>主导实时链路设计与 Flink 作业开发，负责状态管理、反压处理与作业性能调优。</p></div>
+    <div class="section"><h2>项目成果</h2><p>支撑每日 10 亿+ 事件的实时处理，大屏指标延迟控制在 5 秒以内，稳定性达 99.9%。</p></div>
+    <p class="footer-note">© 2025 刘春庆 · 大数据开发工程师 · <a href="https://github.com/Coolwhitex" style="color:hsl(45,100%,72%);text-decoration:none;">GitHub</a></p>
+  </div>
+</body>
+</html>

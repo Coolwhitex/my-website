@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据仓库分层建模实践 - 刘春庆的个人网站</title>
+  <link rel="shortcut icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', 'Microsoft YaHei', sans-serif; background: hsl(240, 2%, 13%); color: hsl(0, 0%, 84%); line-height: 1.9; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: hsl(45, 100%, 72%); text-decoration: none; font-size: 15px; margin-bottom: 28px; transition: opacity 0.3s; }
+    .back-link:hover { opacity: 0.75; }
+    .banner { width: 100%; height: 260px; object-fit: cover; border-radius: 16px; border: 1px solid hsla(0, 0%, 25%, 0.5); background: hsl(0, 0%, 22%); }
+    .meta { margin-top: 20px; font-size: 14px; color: hsla(0, 0%, 84%, 0.6); }
+    .category { display: inline-block; padding: 4px 14px; background: hsl(45, 100%, 72%); color: hsl(240, 2%, 13%); font-size: 13px; font-weight: 600; border-radius: 20px; margin-right: 10px; }
+    h1 { margin-top: 14px; font-size: 30px; font-weight: 600; color: hsl(0, 0%, 100%); }
+    .section { margin-top: 32px; }
+    h2 { font-size: 19px; font-weight: 600; color: hsl(45, 100%, 72%); padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid hsla(0, 0%, 25%, 0.6); }
+    p { margin-bottom: 12px; text-align: justify; }
+    .footer-note { margin-top: 48px; padding-top: 20px; border-top: 1px solid hsla(0, 0%, 25%, 0.6); font-size: 13px; color: hsla(0, 0%, 84%, 0.6); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <img class="banner" src="../assets/images/blog-1.jpg" alt="数据仓库分层建模实践">
+    <div class="meta"><span class="category">数仓</span><span>2025 年 1 月 10 日</span></div>
+    <h1>数据仓库分层建模实践</h1>
+    <div class="section"><h2>一、为什么需要分层</h2><p>数据仓库分层的核心目的，是解决数据处理过程中的复杂度问题。如果不分层，所有逻辑堆叠在一张宽表里，业务一变就要重写，维护成本极高。分层之后，每一层职责单一、边界清晰，可以复用、可以回滚、可以隔离，也让数据血缘更清晰。</p></div><div class="section"><h2>二、经典的四层架构</h2><p>ODS（原始数据层）存放贴源数据，保持与业务系统一致；DWD（明细数据层）做清洗、去重、维度退化，形成标准化的明细事实；DWS（汇总数据层）按主题做轻度汇总，沉淀公共指标；ADS（应用数据层）面向具体业务场景定制，供报表和分析直接使用。</p></div><div class="section"><h2>三、建模方法论</h2><p>推荐采用维度建模，遵循 Kimball 理论：事实表 + 维度表。事实表记录业务过程，维度表描述'谁、何时、何地、何物'。设计时要先梳理业务过程，再定义粒度，最后确定维度和度量。粒度定义是重中之重——粒度越细，复用性越强。</p></div><div class="section"><h2>四、实践建议</h2><p>① 命名规范要统一，表名、字段名、类型全仓一致；② 公共维表只建一份，统一管理；③ 指标口径沉淀到 DWS 层，避免各取所需；④ 做好数据质量监控，及时发现问题；⑤ 用数据地图和血缘工具，降低后期维护成本。</p></div>
+    <p class="footer-note">© 2025 刘春庆 · 大数据开发工程师 · <a href="https://github.com/Coolwhitex" style="color:hsl(45,100%,72%);text-decoration:none;">GitHub</a></p>
+  </div>
+</body>
+</html>

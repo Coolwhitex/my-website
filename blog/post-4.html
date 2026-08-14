@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BI 报表开发实战 - 刘春庆的个人网站</title>
+  <link rel="shortcut icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', 'Microsoft YaHei', sans-serif; background: hsl(240, 2%, 13%); color: hsl(0, 0%, 84%); line-height: 1.9; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: hsl(45, 100%, 72%); text-decoration: none; font-size: 15px; margin-bottom: 28px; transition: opacity 0.3s; }
+    .back-link:hover { opacity: 0.75; }
+    .banner { width: 100%; height: 260px; object-fit: cover; border-radius: 16px; border: 1px solid hsla(0, 0%, 25%, 0.5); background: hsl(0, 0%, 22%); }
+    .meta { margin-top: 20px; font-size: 14px; color: hsla(0, 0%, 84%, 0.6); }
+    .category { display: inline-block; padding: 4px 14px; background: hsl(45, 100%, 72%); color: hsl(240, 2%, 13%); font-size: 13px; font-weight: 600; border-radius: 20px; margin-right: 10px; }
+    h1 { margin-top: 14px; font-size: 30px; font-weight: 600; color: hsl(0, 0%, 100%); }
+    .section { margin-top: 32px; }
+    h2 { font-size: 19px; font-weight: 600; color: hsl(45, 100%, 72%); padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid hsla(0, 0%, 25%, 0.6); }
+    p { margin-bottom: 12px; text-align: justify; }
+    .footer-note { margin-top: 48px; padding-top: 20px; border-top: 1px solid hsla(0, 0%, 25%, 0.6); font-size: 13px; color: hsla(0, 0%, 84%, 0.6); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <img class="banner" src="../assets/images/blog-4.jpg" alt="BI 报表开发实战">
+    <div class="meta"><span class="category">BI</span><span>2024 年 10 月 2 日</span></div>
+    <h1>BI 报表开发实战</h1>
+    <div class="section"><h2>一、指标体系先行</h2><p>BI 报表的核心不是画图，而是指标。开发前先梳理指标体系：北极星指标（如 GMV）、核心指标（转化率、客单价）、过程指标（加购数、支付数）。每个指标要定义清楚：口径（分子/分母）、粒度（日/周/月）、维度（渠道/品类/区域）。</p></div><div class="section"><h2>二、数据模型设计</h2><p>基于数仓模型构建语义层，把复杂的 SQL 封装成业务可理解的字段。原则：一个指标只算一次，多端复用；维度统一挂在公共维表上；避免在报表层做重计算，把复杂逻辑下沉到数仓层。</p></div><div class="section"><h2>三、可视化规范</h2><p>图表选择要匹配数据特征：趋势看折线、对比看柱状、构成看饼图/堆叠、分布看散点/箱线。配色统一、标注清晰、重点突出。一个看板讲一个故事：从总览到细分，从发现问题到定位原因。</p></div><div class="section"><h2>四、性能与体验</h2><p>大表查询做预聚合或物化视图；控制报表加载时间在 5 秒内；权限按角色细分，保障数据安全；支持自助分析，让业务自己拖拽出想要的报表，减少提需求排队。</p></div>
+    <p class="footer-note">© 2025 刘春庆 · 大数据开发工程师 · <a href="https://github.com/Coolwhitex" style="color:hsl(45,100%,72%);text-decoration:none;">GitHub</a></p>
+  </div>
+</body>
+</html>

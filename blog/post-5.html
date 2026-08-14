@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spark 性能调优指南 - 刘春庆的个人网站</title>
+  <link rel="shortcut icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', 'Microsoft YaHei', sans-serif; background: hsl(240, 2%, 13%); color: hsl(0, 0%, 84%); line-height: 1.9; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: hsl(45, 100%, 72%); text-decoration: none; font-size: 15px; margin-bottom: 28px; transition: opacity 0.3s; }
+    .back-link:hover { opacity: 0.75; }
+    .banner { width: 100%; height: 260px; object-fit: cover; border-radius: 16px; border: 1px solid hsla(0, 0%, 25%, 0.5); background: hsl(0, 0%, 22%); }
+    .meta { margin-top: 20px; font-size: 14px; color: hsla(0, 0%, 84%, 0.6); }
+    .category { display: inline-block; padding: 4px 14px; background: hsl(45, 100%, 72%); color: hsl(240, 2%, 13%); font-size: 13px; font-weight: 600; border-radius: 20px; margin-right: 10px; }
+    h1 { margin-top: 14px; font-size: 30px; font-weight: 600; color: hsl(0, 0%, 100%); }
+    .section { margin-top: 32px; }
+    h2 { font-size: 19px; font-weight: 600; color: hsl(45, 100%, 72%); padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid hsla(0, 0%, 25%, 0.6); }
+    p { margin-bottom: 12px; text-align: justify; }
+    .footer-note { margin-top: 48px; padding-top: 20px; border-top: 1px solid hsla(0, 0%, 25%, 0.6); font-size: 13px; color: hsla(0, 0%, 84%, 0.6); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <img class="banner" src="../assets/images/blog-5.jpg" alt="Spark 性能调优指南">
+    <div class="meta"><span class="category">大数据</span><span>2024 年 8 月 20 日</span></div>
+    <h1>Spark 性能调优指南</h1>
+    <div class="section"><h2>一、内存与资源调优</h2><p>Executor 内存分执行内存与存储内存，默认各占一半。根据作业特性调整 spark.memory.fraction 与 spark.memory.storageFraction；合理设置 Executor 数量与核数，避免资源浪费或过度竞争；注意 JVM 堆外内存与 Overhead 配置。</p></div><div class="section"><h2>二、Shuffle 优化</h2><p>Shuffle 是性能瓶颈高发区。优化手段：① 减少 Shuffle 次数，用 Broadcast Join 代替 Shuffle Join（小表广播）；② 调整分区数（spark.sql.shuffle.partitions）；③ 开启 Shuffle 压缩；④ 用 SortMergeJoin 时保证大表排序有序；⑤ 避免数据倾斜（见下）。</p></div><div class="section"><h2>三、数据倾斜解决</h2><p>倾斜表现为部分 Task 长时间运行。常见方案：① 定位倾斜 Key，过滤后单独处理；② 加盐（随机前缀）打散热点 Key，再二次聚合；③ 提高倾斜 Task 的并行度（Adaptive Query Execution 自动优化）；④ 小表广播消除 Join 倾斜；⑤ 两阶段聚合。</p></div><div class="section"><h2>四、实践建议</h2><p>用 Spark UI 观察 Stage 耗时、Task 数据量、GC 时间；开启 Dynamic Allocation 动态分配资源；对大表做分区/分桶裁剪；用 Parquet + 列式压缩（如 ZSTD）减少 IO；定期清理小文件，保持文件数在合理范围。</p></div>
+    <p class="footer-note">© 2025 刘春庆 · 大数据开发工程师 · <a href="https://github.com/Coolwhitex" style="color:hsl(45,100%,72%);text-decoration:none;">GitHub</a></p>
+  </div>
+</body>
+</html>
